@@ -12,12 +12,12 @@ protocol APIRequest {
     
     /// An optional URL that can be used if the API returns a URL for a Pokemon.
     var providedURL: URL? { get }
+    var queryItems: [URLQueryItem]? { get }
 }
 
 extension APIRequest {
     var host: String { "pokeapi.co" }
     var path: String { "/api/v2/pokemon" }
-    var queryItems: [URLQueryItem]? { nil }
 }
 
 extension APIRequest {

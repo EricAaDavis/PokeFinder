@@ -14,6 +14,7 @@ import Foundation
 /// Use this service when you need to fetch data for a pokemon using the URL provided from the .
 struct PokemonDetailAPIService: APIRequest {
     typealias Response = Pokemon
+    var queryItems: [URLQueryItem]? = nil
     
     init(providedURL: URL) {
         self.providedURL = providedURL

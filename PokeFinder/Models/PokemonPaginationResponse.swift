@@ -18,7 +18,9 @@ struct PokemonPaginationResponse: Codable {
     }
 }
 
-struct PokemonLocation: Codable {
+struct PokemonLocation: Codable, Identifiable {
+    var id = UUID()
+    
     private let urlString: String
     
     var url: URL? {

@@ -12,7 +12,6 @@ import Foundation
 /// This service is designed for API requests that fetch a paginated list of URLs for a specific Pokemon.
 /// It constructs the API request URL with pagination parameters (`limit` and `offset`) to fetch a specific range of results.
 struct PokemonPaginationAPIService: APIRequest {
-    
     typealias Response = PokemonPaginationResponse
     var providedURL: URL? = nil
     

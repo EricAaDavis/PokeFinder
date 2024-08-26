@@ -11,7 +11,7 @@ import SwiftUI
 struct PokeFinderApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            InfinitePokemonListView(viewModel: InfinitePokemonListViewModel())
         }
     }
 }
