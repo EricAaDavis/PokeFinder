@@ -9,9 +9,9 @@ import Foundation
 import SwiftData
 
 @Observable
-class PokemonStore {
-    var pokemons = [Pokemon]()
-    var pokemonStoreError: PokemonStoreError?
+final class PokemonStore {
+    private(set) var pokemons = [Pokemon]()
+    private(set) var pokemonStoreError: PokemonStoreError?
     private var modelContext: ModelContext
     
     init(modelContext: ModelContext) {
@@ -49,6 +49,7 @@ class PokemonStore {
     }
     
     /// Deletes a Pokemon from the persistent store at a specified index.
+    ///
     /// Used when deleting a Pokemon in a List .
     func delete(at indexSet: IndexSet) {
         for index in indexSet {
@@ -63,10 +64,21 @@ class PokemonStore {
         }
     }
     
+    func delete(id: Int) {
+        do {
+            try modelContext.delete(model: Pokemon.self, where: #Predicate {
+                id == $0.id
+            })
+            fetchPokemons()
+        } catch {
+            pokemonStoreError = .deleteError(description: "Sorry, we could not delete this pokemon😢")
+
+        }
+    }
+    
     /// Deletes a specified Pokemon from the persistent store.
     func delete(_ pokemon: Pokemon) {
         modelContext.delete(pokemon)
-        
         do {
             try modelContext.save()
             fetchPokemons()
@@ -75,12 +87,19 @@ class PokemonStore {
         }
     }
     
-    // MARK: - Helper
+    // MARK: - Validation
     
     /// Checks if a Pokemon is already stored in the persistent store.
+    ///
     /// - Returns: `true` if the Pokemon is stored, `false` otherwise.
     func checkIfPokemonIsStored(_ pokemon: Pokemon) -> Bool {
-        pokemons.contains(pokemon)
+        checkIfPokemonIsStored(id: pokemon.id)
+    }
+    
+    func checkIfPokemonIsStored(id: Int) -> Bool {
+        pokemons.contains { currentPokemon in
+            currentPokemon.id == id
+        }
     }
 }
 
