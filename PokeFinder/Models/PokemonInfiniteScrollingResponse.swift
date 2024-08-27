@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a paginated response containing the total count and a list of Pokemon locations.
-struct PokemonInfiniteScrollingResponse: Codable {
+struct PokemonInfiniteScrollingResponse: Decodable {
     let count: Int
     let pokemonLocations: [PokemonLocation]
     
@@ -18,16 +18,6 @@ struct PokemonInfiniteScrollingResponse: Codable {
     }
 }
 
-struct PokemonLocation: Codable, Identifiable {
-    var id = UUID()
-    
-    private let urlString: String
-    
-    var url: URL? {
-        URL(string: urlString)
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case urlString = "url"
-    }
+struct PokemonLocation: Decodable {
+    let url: URL
 }
