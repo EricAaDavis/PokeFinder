@@ -6,9 +6,10 @@
 //  Inspired by Eric Palma: https://www.curiousalgorithm.com/post/infinite-scrolling-using-swiftui-and-view-model-mvvm
 
 import Foundation
+import SwiftData
 
 @Observable
-class InfinitePokemonListViewModel {
+final class InfinitePokemonListViewModel {
     // MARK: - Configuration
     private let pokemonsFromEndThreshold = 10
     private let pokemonLocationsPerPage = 30
@@ -55,7 +56,7 @@ class InfinitePokemonListViewModel {
         
         Task {
             do {
-                let pokemonPaginationAPIService = PokemonPaginationAPIService(
+                let pokemonPaginationAPIService = PokemonPaginationService(
                     limit: pokemonLocationsPerPage,
                     offset: pokemonLocationOffset
                 )
@@ -79,9 +80,8 @@ class InfinitePokemonListViewModel {
             do {
                 try await withThrowingTaskGroup(of: Pokemon?.self) { group in
                     for location in locations {
-                        guard let pokemonDetailURL = location.url else { return }
                         group.addTask {
-                            let pokemonDetailAPIService = PokemonDetailAPIService(providedURL: pokemonDetailURL)
+                            let pokemonDetailAPIService = PokemonDetailService(providedURL: location.url)
                             return try await pokemonDetailAPIService.send()
                         }
                     }
@@ -107,7 +107,7 @@ class InfinitePokemonListViewModel {
         }
     }
     
-    // MARK: - Helpers
+    // MARK: - Validation
     
     private func isThresholdReached(_ pokemonsLoadedCount: Int, _ index: Int) -> Bool {
         (pokemonsLoadedCount - index) == pokemonsFromEndThreshold

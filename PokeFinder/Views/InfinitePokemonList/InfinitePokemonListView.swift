@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct InfinitePokemonListView: View {
+    @Environment(\.modelContext) var modelContext
+    
     var viewModel: InfinitePokemonListViewModel
+    
+    @State var isPresented = false
     
     let columns = [
         GridItem(.flexible()),
@@ -16,12 +20,22 @@ struct InfinitePokemonListView: View {
                     ScrollView {
                         LazyVGrid(columns: columns) {
                             ForEach(pokemonLocations, id: \.element.id) { index, item in
-                                PokemonCellView(viewModel: PokemonCellViewModel(pokemon: item))
-                                    .onAppear {
-                                        viewModel.requestMoreItemsIfPossible(for: index)
-                                    }
+                                NavigationLink {
+                                    PokemonDetailView(
+                                        viewModel: PokemonDetailViewModel(
+                                            pokemon: item,
+                                            pokemonStore: PokemonStore(modelContext: modelContext)
+                                        )
+                                    )
+                                } label: {
+                                    PokemonCellView(viewModel: PokemonCellViewModel(pokemon: item))
+                                        .onAppear {
+                                            viewModel.requestMoreItemsIfPossible(for: index)
+                                        }
+                                }
                             }
                         }
+                       
                     }
                 } else if let error = viewModel.error {
                     ContentUnavailableView(
@@ -39,14 +53,33 @@ struct InfinitePokemonListView: View {
             .task {
                 viewModel.requestInitialSetOfPokemons()
             }
+            .sheet(isPresented: $isPresented) {
+                SavedPokemonsView(
+                    viewModel: SavedPokemonsViewModel(
+                        pokemonStore: PokemonStore(
+                            modelContext: modelContext
+                        )
+                    )
+                )
+                .presentationDetents([.medium, .large])
+            }
             .navigationTitle("Pokemons")
             .toolbar {
-                if let error = viewModel.error {
-                    if error == .fetchPokemonLocationsError {
-                        Button {
-                            viewModel.requestInitialSetOfPokemons()
-                        } label: {
-                            Image(systemName: "arrow.counterclockwise")
+                HStack {
+                    Button {
+                        isPresented.toggle()
+                    } label: {
+                        Image(systemName: "list.bullet")
+                    }
+                    
+                    
+                    if let error = viewModel.error {
+                        if error == .fetchPokemonLocationsError {
+                            Button {
+                                viewModel.requestInitialSetOfPokemons()
+                            } label: {
+                                Image(systemName: "arrow.counterclockwise")
+                            }
                         }
                     }
                 }
@@ -55,6 +88,6 @@ struct InfinitePokemonListView: View {
     }
 }
 
-#Preview {
-    InfinitePokemonListView(viewModel: InfinitePokemonListViewModel())
-}
+//#Preview {
+//    InfinitePokemonListView(viewModel: InfinitePokemonListViewModel())
+//}

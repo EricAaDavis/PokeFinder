@@ -10,7 +10,6 @@ import Foundation
 @Observable
 final class PokemonCellViewModel {
     private let pokemon: Pokemon
-    let placeholderImageName = "photo"
         
     init(pokemon: Pokemon) {
         self.pokemon = pokemon

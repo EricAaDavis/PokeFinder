@@ -20,28 +20,10 @@ struct PokemonCellView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ZStack() {
-                Image(viewModel.backgroundImageName)
-                    .resizable()
-                
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                
-                VStack {
-                    AsyncImage(url: viewModel.pokemonImageURL) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        Image(systemName: viewModel.placeholderImageName)
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundStyle(Color(uiColor: .systemGray))
-                            .opacity(placeholderImageOpacity)
-                    }
-                }
-                .padding(cellPadding)
-            }
+            PokemonImageView(
+                backgroundImageName: viewModel.backgroundImageName,
+                pokemonImageURL: viewModel.pokemonImageURL
+            )
             .frame(maxWidth: .infinity, idealHeight: idealCellHeight)
             .cornerRadius(backgroundCornerRadius)
             
@@ -82,7 +64,7 @@ struct PokemonCellView: View {
                     backDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
                     frontDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
                     backShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
-                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png"), types: [PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .fire))]
+                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png"), types: [PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .fire, name: "hello"))]
             )
         )
     )
@@ -107,7 +89,7 @@ struct PokemonCellView: View {
                     frontDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
                     backShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
                     frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"), types: [
-                        PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .ice))                                                                       ]
+                        PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .ice, name: "hello"))                                                                       ]
             )
         )
     )
