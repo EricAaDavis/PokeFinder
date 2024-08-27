@@ -14,21 +14,27 @@ final class Pokemon: Decodable {
     var id: Int
     var order: Int
     var name: String
+    var abilities: [Ability]
     var sprites: Sprites
+    var types: [PokemonType]
     var dateAdded = Date()
     
-    init(id: Int, order: Int, name: String, sprites: Sprites) {
+    init(id: Int, order: Int, name: String, abilities: [Ability], sprites: Sprites, types: [PokemonType]) {
         self.id = id
         self.order = order
         self.name = name
+        self.abilities = abilities
         self.sprites = sprites
+        self.types = types
     }
     
     enum CodingKeys: String, CodingKey {
         case id
         case order
         case name
+        case abilities
         case sprites
+        case types
     }
     
     required init(from decoder: Decoder) throws {
@@ -36,12 +42,14 @@ final class Pokemon: Decodable {
         id = try container.decode(Int.self, forKey: .id)
         order = try container.decode(Int.self, forKey: .order)
         name = try container.decode(String.self, forKey: .name)
+        abilities = try container.decode(Array<Ability>.self, forKey: .abilities)
         sprites = try container.decode(Sprites.self, forKey: .sprites)
+        types = try container.decode(Array<PokemonType>.self, forKey: .types)
     }
 }
 
 @Model
-class Sprites: Decodable {
+final class Sprites: Decodable {
     var backDefault: String
     var frontDefault: String
     var backShiny: String
@@ -67,5 +75,92 @@ class Sprites: Decodable {
         backDefault = try container.decode(String.self, forKey: .backDefault)
         frontShiny = try container.decode(String.self, forKey: .frontShiny)
         backShiny = try container.decode(String.self, forKey: .backShiny)
+    }
+}
+
+@Model
+final class Ability: Decodable {
+    var abilityName: AbilityName
+    var isHidden: Bool
+    var slot: Int
+    
+    init(abilityName: AbilityName, isHidden: Bool, slot: Int) {
+        self.abilityName = abilityName
+        self.isHidden = isHidden
+        self.slot = slot
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case abilityName = "ability"
+        case isHidden = "is_hidden"
+        case slot
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        abilityName = try container.decode(AbilityName.self, forKey: .abilityName)
+        isHidden = try container.decode(Bool.self, forKey: .isHidden)
+        slot = try container.decode(Int.self, forKey: .slot)
+    }
+}
+
+@Model
+final class AbilityName: Decodable {
+    var name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+    
+    enum CodingKeys: CodingKey {
+        case name
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+    }
+}
+
+// MARK: - Pokemon Types
+
+@Model
+final class PokemonType: Decodable {
+    var slot: Int
+    var pokemonTypeDetail: PokemonTypeDetail
+    
+    init(slot: Int, pokemonTypeDetail: PokemonTypeDetail) {
+        self.slot = slot
+        self.pokemonTypeDetail = pokemonTypeDetail
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case slot
+        case pokemonTypeDetail = "type"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        slot = try container.decode(Int.self, forKey: .slot)
+        pokemonTypeDetail = try container.decode(PokemonTypeDetail.self, forKey: .pokemonTypeDetail)
+    }
+}
+
+@Model
+final class PokemonTypeDetail: Decodable {
+    var pokemonTypeName: PokemonTypeName
+    
+    init(pokemonTypeName: PokemonTypeName) {
+        self.pokemonTypeName = pokemonTypeName
+    }
+    
+    enum CodingKeys: CodingKey {
+        case name
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let typeNameString = try container.decode(String.self, forKey: .name)
+        pokemonTypeName = PokemonTypeName(rawValue: typeNameString) ?? .unknown
     }
 }

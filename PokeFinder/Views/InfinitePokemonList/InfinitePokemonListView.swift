@@ -30,8 +30,6 @@ struct InfinitePokemonListView: View {
                         description: Text(error.localizedDescription)
                     )
                 }
-                else {
-                }
             }
             .overlay {
                 if viewModel.isLoading {

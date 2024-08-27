@@ -10,53 +10,104 @@ import SwiftUI
 struct PokemonCellView: View {
     let viewModel: PokemonCellViewModel
     
+    // MARK: Constants
+    
+    let idealCellHeight = 200.0
+    let cellPadding = 8.0
+    let textViewSpacing = 6.0
+    let backgroundCornerRadius = 12.0
+    let placeholderImageOpacity = 0.75
+    
     var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: viewModel.pokemon.sprites.frontDefault)) { image in
-                image
+        VStack(alignment: .leading) {
+            ZStack() {
+                Image(viewModel.backgroundImageName)
                     .resizable()
-                    .scaledToFit()
-            } placeholder: {
-                Image(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
+                
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                
+                VStack {
+                    AsyncImage(url: viewModel.pokemonImageURL) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                    } placeholder: {
+                        Image(systemName: viewModel.placeholderImageName)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(Color(uiColor: .systemGray))
+                            .opacity(placeholderImageOpacity)
+                    }
+                }
+                .padding(cellPadding)
             }
-            .frame(width: 150, height: 150)
-            .padding()
-            Text(viewModel.pokemon.name)
+            .frame(maxWidth: .infinity, idealHeight: idealCellHeight)
+            .cornerRadius(backgroundCornerRadius)
+            
+            VStack(alignment: .leading, spacing: textViewSpacing) {
+                Text(viewModel.pokemonName)
+                    .lineLimit(.zero)
+                    .font(.headline)
+                Text(viewModel.pokemonMainAbility)
+                    .lineLimit(.zero)
+                    .font(.caption2)
+                HStack {
+                    ForEach(viewModel.pokemonTypeEmojis, id: \.self) { pokemonTypeEmoji in
+                        Text(pokemonTypeEmoji)
+                    }
+                }
+            }
         }
+        .padding(cellPadding)
+        .accessibilityElement(children: .combine)
     }
 }
 
-#Preview(traits: .fixedLayout(width: 150, height: 250)) {
+#Preview(traits: .fixedLayout(width: 150, height: 300)) {
     PokemonCellView(
         viewModel:PokemonCellViewModel(
             pokemon: Pokemon(
                 id: 1,
                 order: 1,
                 name: "Pokemon with long name",
+                abilities: [
+                    Ability(
+                        abilityName: AbilityName(name: "Ability"),
+                        isHidden: false,
+                        slot: 1
+                    )
+                ],
                 sprites: Sprites(
                     backDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
                     frontDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
                     backShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png",
-                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png")
+                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/2.png"), types: [PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .fire))]
             )
         )
     )
 }
 
-#Preview(traits: .fixedLayout(width: 150, height: 250)) {
+#Preview(traits: .fixedLayout(width: 150, height: 300)) {
     PokemonCellView(
         viewModel:PokemonCellViewModel(
             pokemon: Pokemon(
                 id: 1,
                 order: 1,
                 name: "Bulbasaur",
+                abilities: [
+                    Ability(
+                        abilityName: AbilityName(name: "Ability"),
+                        isHidden: false,
+                        slot: 1
+                    )
+                ],
                 sprites: Sprites(
                     backDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
                     frontDefault: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
                     backShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png")
+                    frontShiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"), types: [
+                        PokemonType(slot: 1, pokemonTypeDetail: PokemonTypeDetail(pokemonTypeName: .ice))                                                                       ]
             )
         )
     )
