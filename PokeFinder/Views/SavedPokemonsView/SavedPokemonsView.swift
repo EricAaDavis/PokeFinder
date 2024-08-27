@@ -20,7 +20,12 @@ struct SavedPokemonsView: View {
                 List {
                     ForEach(viewModel.savedPokemons) { pokemon in
                         NavigationLink {
-                            Text(pokemon.name)
+                            PokemonDetailView(
+                                viewModel: PokemonDetailViewModel(
+                                    pokemon: pokemon,
+                                    pokemonStore: viewModel.pokemonStore
+                                )
+                            )
                         } label: {
                             Text(pokemon.name)
                         }

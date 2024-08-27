@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 final class SavedPokemonsViewModel {
-    private let pokemonStore: PokemonStore
+    let pokemonStore: PokemonStore
     var savedPokemons = [Pokemon]()
     
     init(pokemonStore: PokemonStore) {
