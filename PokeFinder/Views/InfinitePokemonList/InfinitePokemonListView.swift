@@ -11,22 +11,26 @@ struct InfinitePokemonListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                let pokemonLocations = viewModel.pokemonLocations.enumerated().map({ $0 })
+                let pokemonLocations = viewModel.pokemons.enumerated().map({ $0 })
                 if !pokemonLocations.isEmpty {
                     ScrollView {
                         LazyVGrid(columns: columns) {
                             ForEach(pokemonLocations, id: \.element.id) { index, item in
-                                Text(item.url?.absoluteString ?? "")
+                                PokemonCellView(viewModel: PokemonCellViewModel(pokemon: item))
                                     .onAppear {
                                         viewModel.requestMoreItemsIfPossible(for: index)
-                                        print(index)
                                     }
                             }
                         }
-                        .padding(.horizontal)
                     }
-                } else {
-                    ContentUnavailableView("Unable to find pokemons", systemImage: "xmark.icloud", description: Text("Something went wrong when looking for all the pokemons😕"))
+                } else if let error = viewModel.error {
+                    ContentUnavailableView(
+                        "Unable to find pokemons",
+                        systemImage: "xmark.icloud",
+                        description: Text(error.localizedDescription)
+                    )
+                }
+                else {
                 }
             }
             .overlay {
@@ -38,6 +42,17 @@ struct InfinitePokemonListView: View {
                 viewModel.requestInitialSetOfPokemons()
             }
             .navigationTitle("Pokemons")
+            .toolbar {
+                if let error = viewModel.error {
+                    if error == .fetchPokemonLocationsError {
+                        Button {
+                            viewModel.requestInitialSetOfPokemons()
+                        } label: {
+                            Image(systemName: "arrow.counterclockwise")
+                        }
+                    }
+                }
+            }
         }
     }
 }
