@@ -149,9 +149,11 @@ final class PokemonType: Decodable {
 @Model
 final class PokemonTypeDetail: Decodable {
     var pokemonTypeName: PokemonTypeName
+    var name: String
     
-    init(pokemonTypeName: PokemonTypeName) {
+    init(pokemonTypeName: PokemonTypeName, name: String) {
         self.pokemonTypeName = pokemonTypeName
+        self.name = name
     }
     
     enum CodingKeys: CodingKey {
@@ -161,6 +163,7 @@ final class PokemonTypeDetail: Decodable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let typeNameString = try container.decode(String.self, forKey: .name)
+        name = try container.decode(String.self, forKey: .name)
         pokemonTypeName = PokemonTypeName(rawValue: typeNameString) ?? .unknown
     }
 }
